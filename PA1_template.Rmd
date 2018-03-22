@@ -183,7 +183,7 @@ head(new_data_set,10)
 ```
 
 
-Instead of displaying days of the week, I want to see "Yes" and "No" in the column
+Instead of displaying days of the week, I want to see "Weekend" and "Weekday" in the column
 
 ```{r adding yes and no}
 weekdays = c ("Monday","Tuesday", "Wednesday","Thursday","Friday", "Saturday", "Sunday")
@@ -198,40 +198,50 @@ merger_day<-merger_day[order(merger_day$date,merger_day$interval),]
 head(merger_day)
 ```
 
-```{r assign yes or no}
+```{r assign Weekend or Weekday}
 merger_day$Weekend<-ifelse(merger_day$DN > 5,"Weekend","Weekday")
+
 head(merger_day)
 ```
-```{r}
+```{r remove columns}
 merger_day<-merger_day[c(2,3,4,6)]
 head(merger_day)
 ```
 
+
 ##Making a new plot
-First, let's break the 'weekend' file in two
-Weekend portion:
+
+**Weekend portion**
+
 ```{r weekend portion}
 grouped_by_w<-subset(merger_day,merger_day$Weekend == "Weekend")
 head (grouped_by_w,10)
 ```
-Weekday portion:
+
+```{r aggr weekend}
+plot_data_w<-aggregate(grouped_by_w$steps,by=list(interval=grouped_by_w$interval),FUN= mean)
+```
+
+
+**Weekday portion**
+
 ```{r non-weekend portion}
 grouped_by_nw<-subset(merger_day,merger_day$Weekend == "Weekday")
-head (grouped_by_nw,10)
 ```
 
+```{r agg weekday}
+plot_data_nw<-aggregate(grouped_by_nw$steps,by=list(interval=grouped_by_nw$interval),FUN= mean)
+```
 
 ##Ploting graphs
-###Here is 'weekend' portion
 
-```{r plot weekend graphs,echo = TRUE}
-plot(grouped_by_w$interval,grouped_by_w$steps,type="h")
+```{r plot weekend grap2,echo = TRUE}
+plot(plot_data_w$interval,plot_data_w$x,type="l")
 ```
 
 
-###Here is 'weekday' portion
-```{r plot weekend graphs2,echo = TRUE}
-plot(grouped_by_nw$interval,grouped_by_nw$steps,type="h")
+```{r plot weekday graph,echo = TRUE}
+plot(plot_data_nw$interval,plot_data_nw$x,type="l")
 ```
 
 ###The End
