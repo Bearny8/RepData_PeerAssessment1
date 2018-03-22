@@ -81,8 +81,12 @@ Interval `r GMT_I` contains max number of steps - `r GMT_x`.
 
 ```{r count NA, results='hide'}
 count_NA<-sum(is.na(mydata$steps))
+count_NA
 ```
-Total number of rows with As is `r count_NA`.
+
+**Total number of rows with NAs is `r count_NA`.**
+
+
 
 ##Filling in all of the missing values in the dataset. 
 
@@ -93,19 +97,14 @@ Let's make sure data in the main data file is sorted first by date and then by i
 neworder<-mydata[order(mydata[,2],mydata[,3]),]
 head(neworder,10)
 ```
-Now, let's make sure that file contains totals by intervals is sorted by intervals.
+Now, let's make sure that file contains averages by intervals is sorted by intervals.
 
 ```{r check order2}
 neworder2<-grouped_mydata_time[order(grouped_mydata_time[,1],grouped_mydata_time[,2]),]
-head(neworder2)
+head(neworder2,10)
 ```
 
-Let's add a new column with daily average for each interval
 
-```{r  adding average}
-neworder2$average_steps<-round(neworder2$x/61,digits = 2)
-head(neworder2)
-```
 Let's merger these two correctly ordered files:
 ```{r merger}
 merger_data<-merge(neworder,neworder2)
@@ -122,12 +121,12 @@ Let's re-order these data my date and interval
 neworder3<-merger_data[order(merger_data[,3],merger_data[,1]),]
 head(neworder3)
 ```
-Finally, let's replace all NAs with data from Average_steps column. 
+Finally, let's replace all NAs with data from x column. 
 
-So, the logic is if the data is not available for a particular date and particular interval, we will use two months average for this interval as approximation.
+**So, the logic is if the data is not available for a particular date and particular interval, we will use two months average (x) for this interval as approximation.**
 
 ```{r replace NAs}
-neworder3$steps[is.na(neworder3$steps)]<-neworder3$average_steps
+neworder3$steps[is.na(neworder3$steps)]<-neworder3$x
 head(neworder3)
 ```
 ##Creating new data set
@@ -159,11 +158,13 @@ Here I re-calculate and report the mean and median total number of steps taken p
 ```{r mean  - no NAs}
 steps_mean_nona<-(mean(grouped_new_data_set$x))
 steps_mean_nona_round<- format (steps_mean_nona,digits=5)
+steps_mean_nona_round
 ```
 
 ```{r median - no NAs}
 steps_median_nona<-(median(grouped_new_data_set$x))
 steps_median_nona_round<- format (steps_median_nona,digits=5)
+steps_median_nona_round
 ```
 Mean total number of steps taken per day is `r steps_mean_nona_round` vs.`r steps_mean_round` before NAs were removed.
 
@@ -224,13 +225,13 @@ head (grouped_by_nw,10)
 ###Here is 'weekend' portion
 
 ```{r plot weekend graphs,echo = TRUE}
-plot(grouped_by_w$interval,grouped_by_w$steps,type="b")
+plot(grouped_by_w$interval,grouped_by_w$steps,type="h")
 ```
 
 
 ###Here is 'weekday' portion
 ```{r plot weekend graphs2,echo = TRUE}
-plot(grouped_by_nw$interval,grouped_by_nw$steps,type="b")
+plot(grouped_by_nw$interval,grouped_by_nw$steps,type="h")
 ```
 
 ###The End
